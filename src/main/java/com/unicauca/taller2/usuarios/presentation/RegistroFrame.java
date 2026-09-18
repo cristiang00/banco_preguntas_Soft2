@@ -6,6 +6,7 @@ import com.unicauca.taller2.usuarios.access.PasswordPolicyException;
 
 import javax.swing.*;
 import java.awt.*;
+import co.edu.unicauca.bancopreguntas.presentation.utils.UIUtils;
 
 /**
  * Ventana de registro de nuevos usuarios.
@@ -130,10 +131,12 @@ public class RegistroFrame extends JDialog {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
         buttonPanel.setOpaque(false);
 
-        JButton btnRegistrar = LoginFrame.crearBotonPrimario("Registrar");
+        JButton btnRegistrar = new JButton("Registrar");
+        UIUtils.stylizePrimaryButton(btnRegistrar);
         btnRegistrar.addActionListener(e -> realizarRegistro());
 
-        JButton btnCancelar = LoginFrame.crearBotonSecundario("Cancelar");
+        JButton btnCancelar = new JButton("Cancelar");
+        UIUtils.stylizeSecondaryButton(btnCancelar);
         btnCancelar.addActionListener(e -> dispose());
 
         buttonPanel.add(btnRegistrar);

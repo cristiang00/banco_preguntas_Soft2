@@ -40,4 +40,12 @@ public interface UsuarioRepository {
      * @param estado el nuevo estado
      */
     void actualizarEstado(String nombreUsuario, EstadoUsuario estado);
+
+    /**
+     * Lista usuarios por un rol específico.
+     *
+     * @param rol el rol a filtrar
+     * @return lista de usuarios que tienen el rol especificado
+     */
+    List<Usuario> listarPorRol(com.unicauca.taller2.usuarios.model.Rol rol);
 }

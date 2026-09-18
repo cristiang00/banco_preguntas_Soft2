@@ -113,6 +113,31 @@ public class UsuarioRepositorySQLite implements UsuarioRepository {
         }
     }
 
+    @Override
+    public List<Usuario> listarPorRol(Rol rol) {
+        String sql = "SELECT id, nombre_usuario, nombre_completo, rol, estado, password_hash, fecha_creacion " +
+                     "FROM usuarios WHERE rol = ? ORDER BY nombre_completo";
+
+        List<Usuario> usuarios = new ArrayList<>();
+
+        try (Connection conn = conexion.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+             
+            ps.setString(1, rol.name());
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    usuarios.add(mapearUsuario(rs));
+                }
+            }
+
+            return usuarios;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al listar los usuarios por rol: " + e.getMessage(), e);
+        }
+    }
+
     private Usuario mapearUsuario(ResultSet rs) throws SQLException {
         return new Usuario(
                 rs.getInt("id"),

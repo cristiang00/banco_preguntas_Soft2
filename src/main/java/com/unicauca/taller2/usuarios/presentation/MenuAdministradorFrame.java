@@ -5,6 +5,7 @@ import com.unicauca.taller2.usuarios.model.Usuario;
 
 import javax.swing.*;
 import java.awt.*;
+import co.edu.unicauca.bancopreguntas.presentation.utils.UIUtils;
 
 /**
  * Menú principal para usuarios con rol ADMINISTRADOR.
@@ -14,7 +15,7 @@ public class MenuAdministradorFrame extends JFrame {
     private final Usuario usuario;
     private final UsuarioService usuarioService;
     private final LoginFrame loginFrame;
-    private final Runnable openApp;
+    private final co.edu.unicauca.bancopreguntas.presentation.controllers.AsignacionRevisorController asignacionController;
 
     /**
      * Constructor del menú de administrador.
@@ -23,15 +24,11 @@ public class MenuAdministradorFrame extends JFrame {
      * @param usuarioService servicio de usuarios
      * @param loginFrame     ventana de inicio de sesión
      */
-    public MenuAdministradorFrame(Usuario usuario, UsuarioService usuarioService, LoginFrame loginFrame) {
-        this(usuario, usuarioService, loginFrame, null);
-    }
-
-    public MenuAdministradorFrame(Usuario usuario, UsuarioService usuarioService, LoginFrame loginFrame, Runnable openApp) {
+    public MenuAdministradorFrame(Usuario usuario, UsuarioService usuarioService, LoginFrame loginFrame, co.edu.unicauca.bancopreguntas.presentation.controllers.AsignacionRevisorController asignacionController) {
         this.usuario = usuario;
         this.usuarioService = usuarioService;
         this.loginFrame = loginFrame;
-        this.openApp = openApp;
+        this.asignacionController = asignacionController;
         inicializarUI();
     }
 
@@ -65,7 +62,8 @@ public class MenuAdministradorFrame extends JFrame {
         infoPanel.add(lblBienvenida);
         infoPanel.add(lblRol);
 
-        JButton btnCerrarSesion = LoginFrame.crearBotonSecundario("Cerrar sesión");
+        JButton btnCerrarSesion = new JButton("Cerrar sesión");
+        UIUtils.stylizeSecondaryButton(btnCerrarSesion);
         btnCerrarSesion.setPreferredSize(new Dimension(130, 34));
         btnCerrarSesion.addActionListener(e -> cerrarSesion());
 
@@ -81,9 +79,23 @@ public class MenuAdministradorFrame extends JFrame {
         btnGestionUsuarios.addActionListener(e -> abrirGestionUsuarios());
         opcionesPanel.add(btnGestionUsuarios);
 
-        JButton btnBancoPreguntas = crearBotonMenu("📝  Gestión de Preguntas", openApp != null);
-        if (openApp != null) {
-            btnBancoPreguntas.addActionListener(e -> openApp.run());
+        JButton btnBancoPreguntas = crearBotonMenu("📝  Gestión de Preguntas", asignacionController != null);
+        if (asignacionController != null) {
+            btnBancoPreguntas.addActionListener(e -> {
+                try {
+                    JDialog dialog = new JDialog(MenuAdministradorFrame.this, "Gestión de Preguntas", true);
+                    co.edu.unicauca.bancopreguntas.presentation.views.AsignarRevisorPanel panel = new co.edu.unicauca.bancopreguntas.presentation.views.AsignarRevisorPanel(asignacionController);
+                    panel.actualizarDatos();
+                    dialog.setContentPane(panel);
+                    dialog.pack();
+                    dialog.setMinimumSize(new Dimension(800, 500));
+                    dialog.setLocationRelativeTo(MenuAdministradorFrame.this);
+                    dialog.setVisible(true);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(MenuAdministradorFrame.this, "Error al abrir Gestión de Preguntas: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            });
         }
         opcionesPanel.add(btnBancoPreguntas);
 
@@ -117,21 +129,13 @@ public class MenuAdministradorFrame extends JFrame {
 
     private JButton crearBotonMenu(String texto, boolean habilitado) {
         JButton btn = new JButton(texto);
-        btn.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        btn.setHorizontalAlignment(SwingConstants.LEFT);
-        btn.setPreferredSize(new Dimension(0, 50));
-        btn.setFocusPainted(false);
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btn.setBorderPainted(false);
-        btn.setOpaque(true);
+        UIUtils.stylizeSidebarButton(btn);
 
-        if (habilitado) {
-            btn.setBackground(Color.WHITE);
-            btn.setForeground(new Color(33, 37, 41));
-        } else {
+        if (!habilitado) {
             btn.setEnabled(false);
-            btn.setBackground(new Color(233, 236, 239));
-            btn.setForeground(new Color(173, 181, 189));
+            btn.setBackground(new Color(241, 245, 249)); // Gris claro disabled
+            btn.setForeground(new Color(148, 163, 184)); // Texto gris
+            btn.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         }
 
         return btn;

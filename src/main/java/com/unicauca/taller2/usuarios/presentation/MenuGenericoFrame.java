@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import co.edu.unicauca.bancopreguntas.presentation.utils.UIUtils;
 
 /**
  * Menú genérico reutilizable para roles distintos al Administrador.
@@ -46,7 +47,7 @@ public class MenuGenericoFrame extends JFrame {
 
     private final Usuario usuario;
     private final LoginFrame loginFrame;
-    private final Runnable openApp;
+    private final co.edu.unicauca.bancopreguntas.presentation.controllers.PreguntaController preguntaController;
 
     /**
      * Constructor del menú genérico.
@@ -54,14 +55,10 @@ public class MenuGenericoFrame extends JFrame {
      * @param usuario usuario autenticado
      * @param loginFrame ventana de inicio de sesión
      */
-    public MenuGenericoFrame(Usuario usuario, LoginFrame loginFrame) {
-        this(usuario, loginFrame, null);
-    }
-
-    public MenuGenericoFrame(Usuario usuario, LoginFrame loginFrame, Runnable openApp) {
+    public MenuGenericoFrame(Usuario usuario, LoginFrame loginFrame, co.edu.unicauca.bancopreguntas.presentation.controllers.PreguntaController preguntaController) {
         this.usuario = usuario;
         this.loginFrame = loginFrame;
-        this.openApp = openApp;
+        this.preguntaController = preguntaController;
         inicializarUI();
     }
 
@@ -95,7 +92,8 @@ public class MenuGenericoFrame extends JFrame {
         infoPanel.add(lblBienvenida);
         infoPanel.add(lblRol);
 
-        JButton btnCerrarSesion = LoginFrame.crearBotonSecundario("Cerrar sesión");
+        JButton btnCerrarSesion = new JButton("Cerrar sesión");
+        UIUtils.stylizeSecondaryButton(btnCerrarSesion);
         btnCerrarSesion.setPreferredSize(new Dimension(130, 34));
         btnCerrarSesion.addActionListener(e -> cerrarSesion());
 
@@ -109,25 +107,43 @@ public class MenuGenericoFrame extends JFrame {
 
         List<String> opciones = MENU_OPTIONS.getOrDefault(usuario.getRol(), Collections.emptyList());
 
-        // Always add Gestión de Preguntas if openApp is provided, or hook it to specific text
-        if (openApp != null) {
-            JButton btnGestPreg = new JButton("📝  Gestión de Preguntas (Activo)");
-            btnGestPreg.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-            btnGestPreg.setHorizontalAlignment(SwingConstants.LEFT);
-            btnGestPreg.setPreferredSize(new Dimension(0, 50));
-            btnGestPreg.setFocusPainted(false);
-            btnGestPreg.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            btnGestPreg.setBorderPainted(false);
-            btnGestPreg.setOpaque(true);
-            btnGestPreg.setBackground(Color.WHITE);
-            btnGestPreg.setForeground(new Color(33, 37, 41));
-            btnGestPreg.addActionListener(e -> openApp.run());
-            opcionesPanel.add(btnGestPreg);
-        }
+        // Si es autor de preguntas y tenemos el controlador, asignamos las acciones reales
+        if (usuario.getRol() == Rol.AUTOR_PREGUNTAS && preguntaController != null) {
+            for (String opcion : opciones) {
+                JButton btn = new JButton(opcion);
+                UIUtils.stylizeSidebarButton(btn);
 
-        for (String opcion : opciones) {
-            JButton btn = crearBotonMenuPlaceholder(opcion + " (próximamente)");
-            opcionesPanel.add(btn);
+                if (opcion.equals("📝  Crear Pregunta")) {
+                    btn.addActionListener(e -> {
+                        JDialog dialog = new JDialog(MenuGenericoFrame.this, "Crear Pregunta", true);
+                        co.edu.unicauca.bancopreguntas.presentation.views.CrearPreguntaPanel panel = new co.edu.unicauca.bancopreguntas.presentation.views.CrearPreguntaPanel(preguntaController);
+                        dialog.setContentPane(panel);
+                        dialog.pack();
+                        dialog.setLocationRelativeTo(MenuGenericoFrame.this);
+                        dialog.setVisible(true);
+                    });
+                    opcionesPanel.add(btn);
+                } else if (opcion.equals("📋  Mis Preguntas")) {
+                    btn.addActionListener(e -> {
+                        JDialog dialog = new JDialog(MenuGenericoFrame.this, "Mis Preguntas", true);
+                        co.edu.unicauca.bancopreguntas.presentation.views.ListarPreguntasPanel panel = new co.edu.unicauca.bancopreguntas.presentation.views.ListarPreguntasPanel(preguntaController);
+                        panel.actualizarDatos();
+                        dialog.setContentPane(panel);
+                        dialog.pack();
+                        dialog.setMinimumSize(new Dimension(800, 500));
+                        dialog.setLocationRelativeTo(MenuGenericoFrame.this);
+                        dialog.setVisible(true);
+                    });
+                    opcionesPanel.add(btn);
+                } else {
+                    opcionesPanel.add(crearBotonMenuPlaceholder(opcion + " (próximamente)"));
+                }
+            }
+        } else {
+            for (String opcion : opciones) {
+                JButton btn = crearBotonMenuPlaceholder(opcion + " (próximamente)");
+                opcionesPanel.add(btn);
+            }
         }
 
         if (opciones.isEmpty()) {
@@ -152,15 +168,11 @@ public class MenuGenericoFrame extends JFrame {
 
     private JButton crearBotonMenuPlaceholder(String texto) {
         JButton btn = new JButton(texto);
-        btn.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        btn.setHorizontalAlignment(SwingConstants.LEFT);
-        btn.setPreferredSize(new Dimension(0, 50));
-        btn.setFocusPainted(false);
-        btn.setBorderPainted(false);
-        btn.setOpaque(true);
+        UIUtils.stylizeSidebarButton(btn);
+        btn.setBackground(new Color(241, 245, 249)); // Gris claro disabled
+        btn.setForeground(new Color(148, 163, 184)); // Texto gris
         btn.setEnabled(false);
-        btn.setBackground(new Color(233, 236, 239));
-        btn.setForeground(new Color(173, 181, 189));
+        btn.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         return btn;
     }
 }

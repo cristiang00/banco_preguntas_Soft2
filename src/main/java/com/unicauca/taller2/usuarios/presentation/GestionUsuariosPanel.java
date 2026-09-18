@@ -3,6 +3,7 @@ package com.unicauca.taller2.usuarios.presentation;
 import com.unicauca.taller2.usuarios.services.UsuarioService;
 import com.unicauca.taller2.usuarios.model.EstadoUsuario;
 import com.unicauca.taller2.usuarios.model.Usuario;
+import co.edu.unicauca.bancopreguntas.presentation.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -73,15 +74,18 @@ public class GestionUsuariosPanel extends JPanel {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         buttonPanel.setOpaque(false);
 
-        JButton btnActivar = LoginFrame.crearBotonPrimario("Activar");
+        JButton btnActivar = new JButton("Activar");
+        UIUtils.stylizePrimaryButton(btnActivar);
         btnActivar.setBackground(new Color(25, 135, 84));
         btnActivar.addActionListener(e -> cambiarEstadoSeleccionado(EstadoUsuario.ACTIVO));
 
-        JButton btnInactivar = LoginFrame.crearBotonPrimario("Inactivar");
+        JButton btnInactivar = new JButton("Inactivar");
+        UIUtils.stylizePrimaryButton(btnInactivar);
         btnInactivar.setBackground(new Color(220, 53, 69));
         btnInactivar.addActionListener(e -> cambiarEstadoSeleccionado(EstadoUsuario.INACTIVO));
 
-        JButton btnRefrescar = LoginFrame.crearBotonSecundario("Refrescar");
+        JButton btnRefrescar = new JButton("Refrescar");
+        UIUtils.stylizeSecondaryButton(btnRefrescar);
         btnRefrescar.addActionListener(e -> cargarUsuarios());
 
         buttonPanel.add(btnActivar);

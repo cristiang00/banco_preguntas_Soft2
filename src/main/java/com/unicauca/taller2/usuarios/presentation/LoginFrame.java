@@ -3,11 +3,11 @@ package com.unicauca.taller2.usuarios.presentation;
 import com.unicauca.taller2.usuarios.services.AutenticacionException;
 import com.unicauca.taller2.usuarios.services.AutenticacionService;
 import com.unicauca.taller2.usuarios.services.UsuarioService;
-import com.unicauca.taller2.usuarios.model.Rol;
 import com.unicauca.taller2.usuarios.model.Usuario;
 
 import javax.swing.*;
 import java.awt.*;
+import co.edu.unicauca.bancopreguntas.presentation.utils.UIUtils;
 
 /**
  * Ventana de inicio de sesión.
@@ -16,7 +16,7 @@ public class LoginFrame extends JFrame {
 
     private final AutenticacionService autenticacionService;
     private final UsuarioService usuarioService;
-    private Runnable onLoginSuccess;
+    private java.util.function.Consumer<Usuario> onLoginSuccess;
 
     private JTextField txtUsuario;
     private JPasswordField txtPassword;
@@ -36,7 +36,7 @@ public class LoginFrame extends JFrame {
     /**
      * Constructor con callback de éxito.
      */
-    public LoginFrame(AutenticacionService autenticacionService, UsuarioService usuarioService, Runnable onLoginSuccess) {
+    public LoginFrame(AutenticacionService autenticacionService, UsuarioService usuarioService, java.util.function.Consumer<Usuario> onLoginSuccess) {
         this.autenticacionService = autenticacionService;
         this.usuarioService = usuarioService;
         this.onLoginSuccess = onLoginSuccess;
@@ -70,8 +70,7 @@ public class LoginFrame extends JFrame {
 
         gbc.gridx = 1; gbc.gridy = 0; gbc.weightx = 1.0;
         txtUsuario = new JTextField(20);
-        txtUsuario.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        txtUsuario.setMargin(new Insets(6, 8, 6, 8));
+        UIUtils.stylizeTextField(txtUsuario);
         formPanel.add(txtUsuario, gbc);
 
         gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0;
@@ -81,8 +80,7 @@ public class LoginFrame extends JFrame {
 
         gbc.gridx = 1; gbc.gridy = 1; gbc.weightx = 1.0;
         txtPassword = new JPasswordField(20);
-        txtPassword.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        txtPassword.setMargin(new Insets(6, 8, 6, 8));
+        UIUtils.stylizeTextField(txtPassword);
         formPanel.add(txtPassword, gbc);
 
         mainPanel.add(formPanel, BorderLayout.CENTER);
@@ -90,10 +88,14 @@ public class LoginFrame extends JFrame {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
         buttonPanel.setOpaque(false);
 
-        JButton btnLogin = crearBotonPrimario("Ingresar");
+        JButton btnLogin = new JButton("Ingresar");
+        UIUtils.stylizePrimaryButton(btnLogin);
+        btnLogin.setPreferredSize(new Dimension(140, 38));
         btnLogin.addActionListener(e -> realizarLogin());
 
-        JButton btnRegistro = crearBotonSecundario("Registrarse");
+        JButton btnRegistro = new JButton("Registrarse");
+        UIUtils.stylizeSecondaryButton(btnRegistro);
+        btnRegistro.setPreferredSize(new Dimension(140, 38));
         btnRegistro.addActionListener(e -> abrirRegistro());
 
         buttonPanel.add(btnLogin);
@@ -121,21 +123,15 @@ public class LoginFrame extends JFrame {
 
         try {
             Usuario usuario = autenticacionService.autenticar(nombreUsuario, password);
-            abrirMenuSegunRol(usuario);
+            if (onLoginSuccess != null) {
+                onLoginSuccess.accept(usuario);
+            }
             dispose();
         } catch (AutenticacionException ex) {
             JOptionPane.showMessageDialog(this,
                     ex.getMessage(),
                     "Error de autenticación", JOptionPane.ERROR_MESSAGE);
             txtPassword.setText("");
-        }
-    }
-
-    private void abrirMenuSegunRol(Usuario usuario) {
-        if (usuario.getRol() == Rol.ADMINISTRADOR) {
-            new MenuAdministradorFrame(usuario, usuarioService, this, onLoginSuccess).setVisible(true);
-        } else {
-            new MenuGenericoFrame(usuario, this, onLoginSuccess).setVisible(true);
         }
     }
 
@@ -152,29 +148,5 @@ public class LoginFrame extends JFrame {
         setVisible(true);
     }
 
-    static JButton crearBotonPrimario(String texto) {
-        JButton btn = new JButton(texto);
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        btn.setBackground(new Color(13, 110, 253));
-        btn.setForeground(Color.WHITE);
-        btn.setFocusPainted(false);
-        btn.setBorderPainted(false);
-        btn.setOpaque(true);
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btn.setPreferredSize(new Dimension(140, 38));
-        return btn;
-    }
-
-    static JButton crearBotonSecundario(String texto) {
-        JButton btn = new JButton(texto);
-        btn.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        btn.setBackground(new Color(108, 117, 125));
-        btn.setForeground(Color.WHITE);
-        btn.setFocusPainted(false);
-        btn.setBorderPainted(false);
-        btn.setOpaque(true);
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btn.setPreferredSize(new Dimension(140, 38));
-        return btn;
-    }
+    // Remove redundant custom button methods
 }
