@@ -10,7 +10,7 @@ import java.sql.Statement;
  */
 public class ConexionSQLite {
 
-    private static final String URL = "jdbc:sqlite:usuarios.db";
+    private static final String URL = "jdbc:sqlite:saberpro.db";
 
     private static final String CREATE_TABLE_SQL =
             "CREATE TABLE IF NOT EXISTS usuarios (" +
