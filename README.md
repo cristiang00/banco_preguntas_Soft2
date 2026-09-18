@@ -1,4 +1,4 @@
-# Banco de Preguntas Saber Pro 🎓
+# Banco de Preguntas Saber Pro
 
 ![Java Version](https://img.shields.io/badge/Java-17%2B-blue.svg)
 ![Maven](https://img.shields.io/badge/Maven-3.8%2B-C71A22.svg)
@@ -6,15 +6,15 @@
 
 Sistema de gestión y revisión de preguntas para simulacros tipo Saber Pro. Esta aplicación de escritorio desarrollada en Java (Swing) permite administrar usuarios y centralizar el proceso de creación, validación y almacenamiento de preguntas para pruebas estandarizadas.
 
-## 🌟 Características Principales
+## Características Principales
 
 - **Arquitectura en Capas:** Diseño estructurado en 3 capas (Presentación, Dominio, Acceso a Datos) para garantizar la escalabilidad y mantenibilidad.
 - **Gestión de Usuarios con Roles:** Sistema robusto de inicio de sesión y registro (contraseñas hasheadas con Argon2). Soporta múltiples roles:
-  - 🛠️ *Administrador*: Gestiona usuarios y asigna revisores a preguntas.
-  - ✍️ *Autor de Preguntas*: Crea y propone nuevas preguntas.
-  - 🔍 *Revisor*: Valida técnica y gramaticalmente las preguntas.
-  - 👨‍🏫 *Docente*: (Próximamente) Crea simulacros y evalúa estudiantes.
-  - 👨‍🎓 *Estudiante*: (Próximamente) Realiza simulacros.
+  - *Administrador*: Gestiona usuarios y asigna revisores a preguntas.
+  - *Autor de Preguntas*: Crea y propone nuevas preguntas.
+  - *Revisor*: Valida técnica y gramaticalmente las preguntas.
+  - *Docente*: (Próximamente) Crea simulacros y evalúa estudiantes.
+  - *Estudiante*: (Próximamente) Realiza simulacros.
 - **Validaciones Estructurales (HU-03):** Reglas de negocio estrictas al crear preguntas para garantizar la calidad:
   - Bloqueo de expresiones redundantes ("Todas las anteriores", "Ninguna de las anteriores").
   - Validación de longitud y estructura gramatical de los distractores.
@@ -22,7 +22,7 @@ Sistema de gestión y revisión de preguntas para simulacros tipo Saber Pro. Est
 - **Interfaz Moderna:** Diseño renovado de Swing que implementa utilidades visuales (`UIUtils`) para botones con efectos *hover*, tablas estilizadas, colores consistentes y una tipografía moderna sin dependencias externas.
 - **Persistencia Local:** Uso de SQLite para el almacenamiento de datos, facilitando un entorno ligero sin necesidad de instalar motores de base de datos pesados.
 
-## 📂 Estructura del Proyecto
+## Estructura del Proyecto
 
 El proyecto sigue una estructura de módulos por paquetes, dividiendo el sistema de **Usuarios** del sistema del **Banco de Preguntas**.
 
@@ -40,7 +40,7 @@ src/main/java/
     └── services/         # Servicios de Autenticación y Usuarios
 ```
 
-## 🚀 Instalación y Ejecución
+## Instalación y Ejecución
 
 ### Prerrequisitos
 
@@ -68,7 +68,7 @@ src/main/java/
 
 Al ejecutar el proyecto por primera vez, el sistema **creará automáticamente la base de datos `saberpro.db`** y las tablas necesarias en la raíz del proyecto. El usuario administrador por defecto es **`admin`** con contraseña **`Admin123*`** (o según las instrucciones de tu práctica).
 
-## 🧪 Pruebas Unitarias
+## Pruebas Unitarias
 
 El proyecto cuenta con pruebas unitarias implementadas con **JUnit 5** y **Mockito** para garantizar el correcto funcionamiento de los servicios del dominio (como las validaciones de preguntas).
 
@@ -77,7 +77,7 @@ Para ejecutar las pruebas:
 ./mvnw test
 ```
 
-## 🛠️ Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 - **Lenguaje:** Java 17
 - **Interfaz Gráfica:** Java Swing
